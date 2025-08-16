@@ -1,0 +1,6 @@
+[submodule "xlsxio"]
+	path = xlsxio
+	url = git@github.com:brechtsanders/xlsxio.git
+[submodule "libzip"]
+	path = libzip
+	url = git@github.com:nih-at/libzip.git
