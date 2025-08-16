@@ -38,8 +38,23 @@ import "core:c/libc"
 
 _ :: c
 
+LOCAL :: #config(LOCAL, true)
+STATIC :: #config(STATIC, false)
+
 when ODIN_OS == .Linux {
-	foreign import lib {"../lib/libxlsxio_read.a", "../lib/libzip.a", "../lib/libz.a", "../lib/libexpat.a"}
+	when LOCAL {
+		foreign import lib {"../lib/linux/libxlsxio_read.a", "../lib/linux/libzip.a", "../lib/linux/libz.a", "../lib/linux/libexpat.a"}
+	} else {
+		when STATIC {
+			foreign import lib {"../lib/linux/libxlsxio_read.a", "system:libzip.a", "system:libz.a", "system:libexpat.a"}
+		} else {
+			foreign import lib {"../lib/linux/libxlsxio_read.a", "system:libzip.so", "system:libz.so", "system:libexpat.so"}
+		}
+	}
+}
+
+when ODIN_OS == .Windows {
+	foreign import lib "../lib/windows/libxlsxio_read.a"
 }
 
 XLSXIOCHAR :: c.char
@@ -184,7 +199,7 @@ foreign lib {
 	* \return name of worksheet or NULL if no more worksheets are available
 	* \sa     sheetlist_open()
 	*/
-	sheetlist_next :: proc(sheetlisthandle: ^xlsxioreadersheetlist) -> cstring ---
+	sheetlist_next :: proc(sheetlisthandle: ^xlsxioreadersheetlist) -> Maybe(cstring) ---
 
 	/*! \brief get index of last row read from worksheet (returns 0 if no row was read yet)
 	* \param  sheethandle   read handle for worksheet object

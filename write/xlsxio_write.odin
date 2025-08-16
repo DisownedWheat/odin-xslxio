@@ -37,8 +37,23 @@ import "core:c/libc"
 _ :: c
 _ :: libc
 
+LOCAL :: #config(LOCAL, true)
+STATIC :: #config(STATIC, false)
+
 when ODIN_OS == .Linux {
-	foreign import lib {"../lib/libxlsxio_write.a", "../lib/libzip.a", "../lib/libz.a", "../lib/libexpat.a"}
+	when LOCAL {
+		foreign import lib {"../lib/linux/libxlsxio_write.a", "../lib/linux/libzip.a", "../lib/linux/libz.a"}
+	} else {
+		when STATIC {
+			foreign import lib {"../lib/linux/libxlsxio_write.a", "system:libzip.a", "system:libz.a"}
+		} else {
+			foreign import lib {"../lib/linux/libxlsxio_write.a", "system:libzip.so", "system:libz.so"}
+		}
+	}
+}
+
+when ODIN_OS == .Windows {
+	foreign import lib "../lib/windows/libxlsxio_write.a"
 }
 
 /*! \brief write handle for .xlsx object */
